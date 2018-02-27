@@ -184,8 +184,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return element.isIntersecting || element.intersectionRatio > 0;
     };
 
+    var normalizeThreshold = function normalizeThreshold(threshold) {
+        return {
+            x: threshold.x || threshold,
+            y: threshold.y || threshold
+        };
+    };
+
     var LazyLoad = function LazyLoad(instanceSettings, elements) {
-        this._settings = _extends({}, defaultSettings, instanceSettings);
+        var settings = _extends({}, defaultSettings, instanceSettings);
+        settings.threshold = normalizeThreshold(settings.threshold);
+        this._settings = settings;
         this._setObserver();
         this.update(elements);
     };
@@ -200,7 +209,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var settings = this._settings;
             var observerSettings = {
                 root: settings.container === document ? null : settings.container,
-                rootMargin: settings.threshold + "px"
+                rootMargin: settings.threshold.y + 'px ' + settings.threshold.x + 'px'
             };
             var revealIntersectingElements = function revealIntersectingElements(entries) {
                 entries.forEach(function (entry) {

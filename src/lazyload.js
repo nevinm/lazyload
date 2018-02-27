@@ -3,9 +3,12 @@ import purgeElements from "./lazyload.purge";
 import autoInitialize from "./lazyload.autoInitialize";
 import revealElement from "./lazyload.reveal";
 import {intersectionObserverSupport, isIntersecting} from "./lazyload.intersectionObserver";
+import normalizeThreshold from "./lazyload.threshold";
 
 const LazyLoad = function (instanceSettings, elements) {
-    this._settings = Object.assign({}, defaultSettings, instanceSettings);
+    const settings = Object.assign({}, defaultSettings, instanceSettings);
+    settings.threshold = normalizeThreshold(settings.threshold);
+    this._settings = settings;
     this._setObserver();
     this.update(elements);
 };
@@ -16,7 +19,7 @@ LazyLoad.prototype = {
         const settings = this._settings;
         const observerSettings = {
             root: settings.container === document ? null : settings.container,
-            rootMargin: settings.threshold + "px"
+            rootMargin: `${settings.threshold.y}px ${settings.threshold.x}px`
         };
         const revealIntersectingElements = (entries) => {
             entries.forEach(entry => {

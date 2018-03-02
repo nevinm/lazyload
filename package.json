@@ -15,7 +15,9 @@
     "gulp-uglify": "^3.0.0",
     "jest-cli": "^20.0.4"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "jest"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/verlok/lazyload"

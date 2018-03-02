@@ -1,4 +1,5 @@
 import reveal from "../src/lazyload.reveal";
+import expectExtend from "./lib/expectExtend";
 
 test("reveal is defined", () => {
     expect(typeof reveal).toBe("function");
@@ -15,19 +16,7 @@ check that:
 - class class_loading has been set
 */
 
-expect.extend({
-    toHaveAttributeValue: (element, attributeName, valueToVerify) => {
-        const actualValue = element.getAttribute(attributeName);
-        const pass = actualValue === valueToVerify;
-        return pass ? {
-            message: () => `${element.tagName} has attribute "${attributeName}" set to "${valueToVerify}"`,
-            pass: true
-        } : {
-            message: () => `expected ${element.tagName} to have attribute "${attributeName}" set to "${valueToVerify}", received "${actualValue}"`,
-            pass: false
-        }
-    }
-});
+expectExtend(expect);
 
 describe("reveal calls set callback", () => {
 

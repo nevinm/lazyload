@@ -1,7 +1,7 @@
 import defaultSettings from "./lazyload.defaults";
 import purgeElements from "./lazyload.purge";
 import autoInitialize from "./lazyload.autoInitialize";
-import revealElement from "./lazyload.reveal";
+import {revealElement} from "./lazyload.reveal";
 import {intersectionObserverSupport, isIntersecting} from "./lazyload.intersectionObserver";
 
 const LazyLoad = function (instanceSettings, elements) {

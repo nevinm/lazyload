@@ -1,13 +1,13 @@
-import reveal from "../src/lazyload.reveal";
+import {revealElement} from "../src/lazyload.reveal";
 import expectExtend from "./lib/expectExtend";
 
-test("reveal is defined", () => {
-    expect(typeof reveal).toBe("function");
+test("revealElement is defined", () => {
+    expect(typeof revealElement).toBe("function");
 });
 
 /*
 Create an element
-call reveal(element, settings) on it
+call revealElement(element, settings) on it
 check that:
 - callback_set is called (element)
 - setSources is called with (element, settings)
@@ -30,7 +30,7 @@ describe("reveal calls set callback", () => {
     });
 
     test("Was processed is set", () => {
-        reveal(img, settings);
+        revealElement(img, settings);
         expect(img).toHaveAttributeValue("data-was-processed", "true");
     });
     

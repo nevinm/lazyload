@@ -36,11 +36,16 @@ const onEvent = function (event, success, settings) {
     callCallback(success ? settings.callback_load : settings.callback_error, element); // Calling loaded or error callback
 }
 
-export const revealElement = function (element, settings, mocks) {
-    var _callCallback = mocks ? mocks.callCallback : callCallback;
+export const revealElement = function (element, settings, deps) {
+    var _callCallback = callCallback,
+        _addOneShotListeners = addOneShotListeners;
+    if (deps) {
+        if (deps.callCallback) { _callCallback = deps.callCallback };
+        if (deps.addOneShotListeners) { _addOneShotListeners = deps.addOneShotListeners };
+    }
     _callCallback(settings.callback_enter, element);
     if (["IMG", "IFRAME"].indexOf(element.tagName) > -1) {
-        addOneShotListeners(element, settings);
+        _addOneShotListeners(element, settings);
         addClass(element, settings.class_loading);
     }
     setSources(element, settings);

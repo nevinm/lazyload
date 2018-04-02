@@ -47,7 +47,15 @@ describe("revealElement...", () => {
         expect(callCallbackMock).toHaveBeenCalledTimes(2);
         expect(callCallbackMock).toHaveBeenCalledWith(callback_enter, img);
         expect(callCallbackMock).toHaveBeenCalledWith(callback_set, img);
-    });    
+    });
+
+    test("...addOneShotListeners is called once", () => {
+        var addOneShotListenersMock = jest.fn();
+        revealElement(img, settings, {
+            addOneShotListeners: addOneShotListenersMock
+        });
+        expect(addOneShotListenersMock).toHaveBeenCalledTimes(1);
+    })
 
     afterEach(() => {
         div.removeChild(img);

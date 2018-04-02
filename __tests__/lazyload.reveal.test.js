@@ -9,29 +9,49 @@ test("revealElement is defined", () => {
 Create an element
 call revealElement(element, settings) on it
 check that:
+- data-was-processed is set to true
 - callback_set is called (element)
 - setSources is called with (element, settings)
-- setData is called || data-was-processed is set to true
 - event listener to load and error have been set
 - class class_loading has been set
 */
 
 expectExtend(expect);
 
-describe("reveal calls set callback", () => {
+describe("revealElement...", () => {
 
-    let img;
-    const settings = {"set": "tings"};
+    var img, div, 
+        callback_enter = function(el) {return null;}, 
+        callback_set = function(el) {return null;};
+    const settings = {
+        callback_enter,
+        callback_set
+    };
 
     beforeEach(() => {
         // Parent is a div
-        let div = document.createElement("div");
+        div = document.createElement("div");
         div.appendChild(img = document.createElement("img"));
     });
 
-    test("Was processed is set", () => {
+    test("...data-was-processed is set", () => {
         revealElement(img, settings);
         expect(img).toHaveAttributeValue("data-was-processed", "true");
+    });
+
+    test("...callback_set is called right", () => {
+        var callCallbackMock = jest.fn();
+        revealElement(img, settings, {
+            callCallback: callCallbackMock
+        });
+        expect(callCallbackMock).toHaveBeenCalledTimes(2);
+        expect(callCallbackMock).toHaveBeenCalledWith(callback_enter, img);
+        expect(callCallbackMock).toHaveBeenCalledWith(callback_set, img);
+    });    
+
+    afterEach(() => {
+        div.removeChild(img);
+        div = null;
     });
     
 });

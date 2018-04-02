@@ -20,7 +20,7 @@ expectExtend(expect);
 
 describe("revealElement...", () => {
 
-    var img, div, 
+    var img, iframe, bgImg, div, 
         callback_enter = function(el) {return null;}, 
         callback_set = function(el) {return null;};
     const settings = {
@@ -32,6 +32,8 @@ describe("revealElement...", () => {
         // Parent is a div
         div = document.createElement("div");
         div.appendChild(img = document.createElement("img"));
+        div.appendChild(iframe = document.createElement("iframe"));
+        div.appendChild(bgImg = document.createElement("div"));
     });
 
     test("...data-was-processed is set", () => {
@@ -49,16 +51,34 @@ describe("revealElement...", () => {
         expect(callCallbackMock).toHaveBeenCalledWith(callback_set, img);
     });
 
-    test("...addOneShotListeners is called once", () => {
+    test("...addOneShotListeners is called once if elemnet is IMG", () => {
         var addOneShotListenersMock = jest.fn();
         revealElement(img, settings, {
             addOneShotListeners: addOneShotListenersMock
         });
         expect(addOneShotListenersMock).toHaveBeenCalledTimes(1);
-    })
+    });
+
+    test("...addOneShotListeners is called once if elemnet is IFRAME", () => {
+        var addOneShotListenersMock = jest.fn();
+        revealElement(iframe, settings, {
+            addOneShotListeners: addOneShotListenersMock
+        });
+        expect(addOneShotListenersMock).toHaveBeenCalledTimes(1);
+    });
+
+    test("...addOneShotListeners is NOT called if DIV", () => {
+        var addOneShotListenersMock = jest.fn();
+        revealElement(bgImg, settings, {
+            addOneShotListeners: addOneShotListenersMock
+        });
+        expect(addOneShotListenersMock).toHaveBeenCalledTimes(0);
+    });
 
     afterEach(() => {
         div.removeChild(img);
+        div.removeChild(bgImg);
+        div.removeChild(iframe);
         div = null;
     });
     

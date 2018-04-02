@@ -38,7 +38,8 @@ const onEvent = function (event, success, settings) {
 
 export const revealElement = function (element, settings, deps) {
     var _callCallback = callCallback,
-        _addOneShotListeners = addOneShotListeners;
+        _addOneShotListeners = addOneShotListeners,
+        _addClass = addClass;
     if (deps) {
         if (deps.callCallback) { _callCallback = deps.callCallback };
         if (deps.addOneShotListeners) { _addOneShotListeners = deps.addOneShotListeners };
@@ -46,7 +47,7 @@ export const revealElement = function (element, settings, deps) {
     _callCallback(settings.callback_enter, element);
     if (["IMG", "IFRAME"].indexOf(element.tagName) > -1) {
         _addOneShotListeners(element, settings);
-        addClass(element, settings.class_loading);
+        _addClass(element, settings.class_loading);
     }
     setSources(element, settings);
     setData(element, "was-processed", true);

@@ -58,6 +58,7 @@ describe("revealElement...", () => {
             addOneShotListeners: addOneShotListenersMock
         });
         expect(addOneShotListenersMock).toHaveBeenCalledTimes(1);
+        expect(addOneShotListenersMock).toHaveBeenCalledWith(img, settings);
     });
 
     test("...addOneShotListeners is called once if elemnet is IFRAME", () => {
@@ -66,6 +67,7 @@ describe("revealElement...", () => {
             addOneShotListeners: addOneShotListenersMock
         });
         expect(addOneShotListenersMock).toHaveBeenCalledTimes(1);
+        expect(addOneShotListenersMock).toHaveBeenCalledWith(iframe, settings);
     });
 
     test("...addOneShotListeners is NOT called if DIV", () => {
@@ -82,6 +84,7 @@ describe("revealElement...", () => {
             addClass: addClassMock
         });
         expect(addClassMock).toHaveBeenCalledTimes(1);
+        expect(addClassMock).toHaveBeenCalledWith(img, "test-loading");
     });
 
     afterEach(() => {

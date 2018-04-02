@@ -43,6 +43,7 @@ export const revealElement = function (element, settings, deps) {
     if (deps) {
         if (deps.callCallback) { _callCallback = deps.callCallback };
         if (deps.addOneShotListeners) { _addOneShotListeners = deps.addOneShotListeners };
+        if (deps.addClass) { _addClass = deps.addClass };
     }
     _callCallback(settings.callback_enter, element);
     if (["IMG", "IFRAME"].indexOf(element.tagName) > -1) {

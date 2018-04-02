@@ -25,7 +25,8 @@ describe("revealElement...", () => {
         callback_set = function(el) {return null;};
     const settings = {
         callback_enter,
-        callback_set
+        callback_set,
+        class_loading: "test-loading"
     };
 
     beforeEach(() => {
@@ -73,6 +74,14 @@ describe("revealElement...", () => {
             addOneShotListeners: addOneShotListenersMock
         });
         expect(addOneShotListenersMock).toHaveBeenCalledTimes(0);
+    });
+
+    test("...addClass is called for loading", () => {
+        var addClassMock = jest.fn();
+        revealElement(img, settings, {
+            addClass: addClassMock
+        });
+        expect(addClassMock).toHaveBeenCalledTimes(1);
     });
 
     afterEach(() => {

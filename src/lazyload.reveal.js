@@ -37,6 +37,11 @@ const onEvent = function (event, success, settings) {
 }
 
 export const revealElement = function (element, settings, deps) {
+    /* 
+     * TODO: 
+     * AVOID ALL THIS USING JEST'S OVERRIDE FOR IMPORTED MODULE 
+     * --> MANUAL MOCKS? https://facebook.github.io/jest/docs/en/manual-mocks.html
+     */
     var _callCallback = callCallback,
         _addOneShotListeners = addOneShotListeners,
         _addClass = addClass;

@@ -29,11 +29,11 @@ const setData = (element, attribute, value) => {
     return element.setAttribute(dataPrefix + attribute, value);
 };
 
-var purgeElements = function (elements) {
+function purgeElements (elements) {
     return elements.filter((element) => {
         return !getData(element, "was-processed");
     });
-};
+}
 
 /* Creates instance and notifies it through the window element */
 const createInstance = function (classObj, options) { 
@@ -54,7 +54,7 @@ const createInstance = function (classObj, options) {
 
 /* Auto initialization of one or more instances of lazyload, depending on the 
     options passed in (plain object or an array) */
-var autoInitialize = function (classObj, options) {
+function autoInitialize (classObj, options) {
     if (!options.length) {
         // Plain object
         createInstance(classObj, options);
@@ -64,7 +64,7 @@ var autoInitialize = function (classObj, options) {
             createInstance(classObj, optionsItem);
         }
     }
-};
+}
 
 const setSourcesForPicture = function (element, settings) {
     const {data_srcset: dataSrcSet} = settings;
@@ -135,12 +135,12 @@ const callCallback = function (callback, argument) {
 const loadString = "load";
 const errorString = "error";
 
-const removeListeners = function(element, loadHandler, errorHandler) {
+const removeListeners = function (element, loadHandler, errorHandler) {
     element.removeEventListener(loadString, loadHandler);
     element.removeEventListener(errorString, errorHandler);
 };
 
-const addOneShotListeners = function(element, settings) {
+const addOneShotListeners = function (element, settings) {
     const onLoad = (event) => {
         onEvent(event, true, settings);
         removeListeners(element, onLoad, onError);
@@ -160,15 +160,22 @@ const onEvent = function (event, success, settings) {
     callCallback(success ? settings.callback_load : settings.callback_error, element); // Calling loaded or error callback
 };
 
-const revealElement = function (element, settings) {
-    callCallback(settings.callback_enter, element);
+const revealElement = function (element, settings, dependencies) {
+    var functs = {
+        callCallback,
+        addOneShotListeners,
+        addClass
+    };
+
+    Object.assign(functs, dependencies);
+    functs.callCallback(settings.callback_enter, element);
     if (["IMG", "IFRAME"].indexOf(element.tagName) > -1) {
-        addOneShotListeners(element, settings);
-        addClass(element, settings.class_loading);
+        functs.addOneShotListeners(element, settings);
+        functs.addClass(element, settings.class_loading);
     }
     setSources(element, settings);
     setData(element, "was-processed", true);
-    callCallback(settings.callback_set, element);
+    functs.callCallback(settings.callback_set, element);
 };
 
 const intersectionObserverSupport = "IntersectionObserver" in window;

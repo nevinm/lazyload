@@ -1,6 +1,6 @@
-import {setSources} from "./lazyload.setSources";
-import {setData} from "./lazyload.data";
-import {addClass, removeClass} from "./lazyload.class";
+import { setSources } from "./lazyload.setSources";
+import { setData } from "./lazyload.data";
+import { addClass, removeClass } from "./lazyload.class";
 
 const callCallback = function (callback, argument) {
     if (callback) {
@@ -11,12 +11,12 @@ const callCallback = function (callback, argument) {
 const loadString = "load";
 const errorString = "error";
 
-const removeListeners = function(element, loadHandler, errorHandler) {
+const removeListeners = function (element, loadHandler, errorHandler) {
     element.removeEventListener(loadString, loadHandler);
     element.removeEventListener(errorString, errorHandler);
 };
 
-const addOneShotListeners = function(element, settings) {
+const addOneShotListeners = function (element, settings) {
     const onLoad = (event) => {
         onEvent(event, true, settings);
         removeListeners(element, onLoad, onError);
@@ -36,26 +36,20 @@ const onEvent = function (event, success, settings) {
     callCallback(success ? settings.callback_load : settings.callback_error, element); // Calling loaded or error callback
 }
 
-export const revealElement = function (element, settings, deps) {
-    /* 
-     * TODO: 
-     * AVOID ALL THIS USING JEST'S OVERRIDE FOR IMPORTED MODULE 
-     * --> MANUAL MOCKS? https://facebook.github.io/jest/docs/en/manual-mocks.html
-     */
-    var _callCallback = callCallback,
-        _addOneShotListeners = addOneShotListeners,
-        _addClass = addClass;
-    if (deps) {
-        if (deps.callCallback) { _callCallback = deps.callCallback };
-        if (deps.addOneShotListeners) { _addOneShotListeners = deps.addOneShotListeners };
-        if (deps.addClass) { _addClass = deps.addClass };
-    }
-    _callCallback(settings.callback_enter, element);
+export const revealElement = function (element, settings, dependencies) {
+    var functs = {
+        callCallback,
+        addOneShotListeners,
+        addClass
+    };
+
+    Object.assign(functs, dependencies);
+    functs.callCallback(settings.callback_enter, element);
     if (["IMG", "IFRAME"].indexOf(element.tagName) > -1) {
-        _addOneShotListeners(element, settings);
-        _addClass(element, settings.class_loading);
+        functs.addOneShotListeners(element, settings);
+        functs.addClass(element, settings.class_loading);
     }
     setSources(element, settings);
     setData(element, "was-processed", true);
-    _callCallback(settings.callback_set, element);
+    functs.callCallback(settings.callback_set, element);
 };

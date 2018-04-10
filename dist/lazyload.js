@@ -32,11 +32,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return element.setAttribute(dataPrefix + attribute, value);
     };
 
-    var purgeElements = function purgeElements(elements) {
+    function purgeElements(elements) {
         return elements.filter(function (element) {
             return !getData(element, "was-processed");
         });
-    };
+    }
 
     /* Creates instance and notifies it through the window element */
     var createInstance = function createInstance(classObj, options) {
@@ -56,7 +56,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     /* Auto initialization of one or more instances of lazyload, depending on the 
         options passed in (plain object or an array) */
-    var autoInitialize = function autoInitialize(classObj, options) {
+    function autoInitialize(classObj, options) {
         if (!options.length) {
             // Plain object
             createInstance(classObj, options);
@@ -66,7 +66,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 createInstance(classObj, optionsItem);
             }
         }
-    };
+    }
 
     var setSourcesForPicture = function setSourcesForPicture(element, settings) {
         var dataSrcSet = settings.data_srcset;
@@ -165,15 +165,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         callCallback(success ? settings.callback_load : settings.callback_error, element); // Calling loaded or error callback
     };
 
-    var revealElement = function revealElement(element, settings) {
-        callCallback(settings.callback_enter, element);
+    var revealElement = function revealElement(element, settings, dependencies) {
+        var functs = {
+            callCallback: callCallback,
+            addOneShotListeners: addOneShotListeners,
+            addClass: addClass
+        };
+
+        _extends(functs, dependencies);
+        functs.callCallback(settings.callback_enter, element);
         if (["IMG", "IFRAME"].indexOf(element.tagName) > -1) {
-            addOneShotListeners(element, settings);
-            addClass(element, settings.class_loading);
+            functs.addOneShotListeners(element, settings);
+            functs.addClass(element, settings.class_loading);
         }
         setSources(element, settings);
         setData(element, "was-processed", true);
-        callCallback(settings.callback_set, element);
+        functs.callCallback(settings.callback_set, element);
     };
 
     var intersectionObserverSupport = "IntersectionObserver" in window;

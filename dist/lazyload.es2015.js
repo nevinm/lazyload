@@ -4,19 +4,23 @@
 	(global.LazyLoad = factory());
 }(this, (function () { 'use strict';
 
-var defaultSettings = {
-    elements_selector: "img",
-    container: document,
-    threshold: 300,
-    data_src: "src",
-    data_srcset: "srcset",
-    class_loading: "loading",
-    class_loaded: "loaded",
-    class_error: "error",
-    callback_load: null,
-    callback_error: null,
-    callback_set: null,
-    callback_enter: null
+var getInstanceSettings = (customSettings) => {
+    const defaultSettings = {
+        elements_selector: "img",
+        container: document,
+        threshold: 300,
+        data_src: "src",
+        data_srcset: "srcset",
+        class_loading: "loading",
+        class_loaded: "loaded",
+        class_error: "error",
+        callback_load: null,
+        callback_error: null,
+        callback_set: null,
+        callback_enter: null
+    };
+
+    return Object.assign({}, defaultSettings, customSettings);
 };
 
 const dataPrefix = "data-";
@@ -69,7 +73,7 @@ function autoInitialize (classObj, options) {
 const setSourcesForPicture = function (element, settings) {
     const {data_srcset: dataSrcSet} = settings;
     const parent = element.parentNode;
-    if (parent.tagName !== "PICTURE") {
+    if (!parent || parent.tagName !== "PICTURE") {
         return;
     }
     for (let i = 0, pictureChild; pictureChild = parent.children[i]; i += 1) {
@@ -108,7 +112,11 @@ const setSources = function (element, settings) {
     }
 };
 
-const supportsClassList = "classList" in document.createElement("p");
+const runningOnBrowser = (typeof window !== "undefined");
+
+const supportsIntersectionObserver = runningOnBrowser && ("IntersectionObserver" in window);
+
+const supportsClassList = runningOnBrowser && ("classList" in document.createElement("p"));
 
 const addClass = (element, className) => {
     if (supportsClassList) {
@@ -178,21 +186,22 @@ const revealElement = function (element, settings, dependencies) {
     functs.callCallback(settings.callback_set, element);
 };
 
-const intersectionObserverSupport = "IntersectionObserver" in window;
-
 /* entry.isIntersecting needs fallback because is null on some versions of MS Edge, and
    entry.intersectionRatio is not enough alone because it could be 0 on some intersecting elements */
 const isIntersecting = (element) => element.isIntersecting || element.intersectionRatio > 0;
 
-const LazyLoad = function (instanceSettings, elements) {
-    this._settings = Object.assign({}, defaultSettings, instanceSettings);
+const LazyLoad = function (customSettings, elements) {
+    this._settings = getInstanceSettings(customSettings);
     this._setObserver();
     this.update(elements);
 };
 
 LazyLoad.prototype = {
     _setObserver: function () {
-        if (!intersectionObserverSupport) { return; }
+        if (!supportsIntersectionObserver) {
+            return;
+        }
+
         const settings = this._settings;
         const observerSettings = {
             root: settings.container === document ? null : settings.container,
@@ -243,7 +252,7 @@ LazyLoad.prototype = {
 
 /* Automatic instances creation if required (useful for async script loading!) */
 let autoInitOptions = window.lazyLoadOptions;
-if (autoInitOptions) {
+if (runningOnBrowser && autoInitOptions) {
     autoInitialize(LazyLoad, autoInitOptions);
 }
 

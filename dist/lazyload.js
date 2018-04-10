@@ -7,19 +7,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 })(this, function () {
     'use strict';
 
-    var defaultSettings = {
-        elements_selector: "img",
-        container: document,
-        threshold: 300,
-        data_src: "src",
-        data_srcset: "srcset",
-        class_loading: "loading",
-        class_loaded: "loaded",
-        class_error: "error",
-        callback_load: null,
-        callback_error: null,
-        callback_set: null,
-        callback_enter: null
+    var getInstanceSettings = function getInstanceSettings(customSettings) {
+        var defaultSettings = {
+            elements_selector: "img",
+            container: document,
+            threshold: 300,
+            data_src: "src",
+            data_srcset: "srcset",
+            class_loading: "loading",
+            class_loaded: "loaded",
+            class_error: "error",
+            callback_load: null,
+            callback_error: null,
+            callback_set: null,
+            callback_enter: null
+        };
+
+        return _extends({}, defaultSettings, customSettings);
     };
 
     var dataPrefix = "data-";
@@ -72,7 +76,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var dataSrcSet = settings.data_srcset;
 
         var parent = element.parentNode;
-        if (parent.tagName !== "PICTURE") {
+        if (!parent || parent.tagName !== "PICTURE") {
             return;
         }
         for (var i = 0, pictureChild; pictureChild = parent.children[i]; i += 1) {
@@ -113,7 +117,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
     };
 
-    var supportsClassList = "classList" in document.createElement("p");
+    var runningOnBrowser = typeof window !== "undefined";
+
+    var supportsIntersectionObserver = runningOnBrowser && "IntersectionObserver" in window;
+
+    var supportsClassList = runningOnBrowser && "classList" in document.createElement("p");
 
     var addClass = function addClass(element, className) {
         if (supportsClassList) {
@@ -183,16 +191,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         functs.callCallback(settings.callback_set, element);
     };
 
-    var intersectionObserverSupport = "IntersectionObserver" in window;
-
     /* entry.isIntersecting needs fallback because is null on some versions of MS Edge, and
        entry.intersectionRatio is not enough alone because it could be 0 on some intersecting elements */
     var isIntersecting = function isIntersecting(element) {
         return element.isIntersecting || element.intersectionRatio > 0;
     };
 
-    var LazyLoad = function LazyLoad(instanceSettings, elements) {
-        this._settings = _extends({}, defaultSettings, instanceSettings);
+    var LazyLoad = function LazyLoad(customSettings, elements) {
+        this._settings = getInstanceSettings(customSettings);
         this._setObserver();
         this.update(elements);
     };
@@ -201,9 +207,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         _setObserver: function _setObserver() {
             var _this = this;
 
-            if (!intersectionObserverSupport) {
+            if (!supportsIntersectionObserver) {
                 return;
             }
+
             var settings = this._settings;
             var observerSettings = {
                 root: settings.container === document ? null : settings.container,
@@ -258,7 +265,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     /* Automatic instances creation if required (useful for async script loading!) */
     var autoInitOptions = window.lazyLoadOptions;
-    if (autoInitOptions) {
+    if (runningOnBrowser && autoInitOptions) {
         autoInitialize(LazyLoad, autoInitOptions);
     }
 
